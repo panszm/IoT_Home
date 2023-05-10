@@ -1,0 +1,31 @@
+<div class="content">
+  <div class="section">
+    <div class="section-title">Stats</div>
+    <div class="subsection">
+      <div class="section-title">In the system:</div>
+      <div class="item">Locations: {{ locations.length }}</div>
+      <div class="subsection">
+        <div>Devices: {{ devices.length }}</div>
+      </div>
+      <div class="subsection">
+        <div>Sensors: {{ sensors.length }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-title">Device warnings</div>
+    <div class="item warning" *ngFor="let device of devicesUnavailable">
+      <span class="timestamp">{{ device.device_status?.timestamp }}</span>
+      Device "{{ device.name }}" is down.
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-title">Sensor warnings</div>
+    <div class="item warning" *ngFor="let sensor of sensorsWithEdgeValue">
+      <span class="timestamp">{{ sensor.latest_measurement?.timestamp }}</span>
+      Sensor "{{ sensor.name }}" has reached edge value ({{
+        sensor.latest_measurement?.measurement_value
+      }}).
+    </div>
+  </div>
+</div>

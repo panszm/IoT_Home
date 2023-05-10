@@ -1,0 +1,70 @@
+<p-dialog
+  header="Create new instance: "
+  [visible]="visible"
+  (visibleChange)="onVisibleChange($event)"
+  [style]="{ width: '50vw' }"
+  [draggable]="false"
+  [maskStyleClass]="visible ? 'mask' : ''"
+  [dismissableMask]="true"
+>
+  <div class="input-row">
+    Name: <input type="text" pInputText [(ngModel)]="name" />
+  </div>
+  <div class="input-row">
+    Type:
+    <select name="type" [(ngModel)]="type">
+      <option *ngFor="let typeitem of types" [value]="typeitem">
+        {{ typeitem }}
+      </option>
+    </select>
+  </div>
+  <div class="input-row" *ngIf="type == 'Room'">
+    Parent:
+    <select name="type" [(ngModel)]="parentLocationId">
+      <option *ngFor="let item of fullStructure" [value]="item.id">
+        {{ item.name }}
+      </option>
+    </select>
+  </div>
+  <ng-container *ngIf="type == 'Device' || type == 'Sensor'">
+    <div class="input-row" *ngIf="type == 'Device'">
+      Model:
+      <select name="type" [(ngModel)]="modelId">
+        <option *ngFor="let item of deviceModels" [value]="item.id">
+          {{ item.name }}
+        </option>
+      </select>
+    </div>
+    <div class="input-row" *ngIf="type == 'Sensor'">
+      Model:
+      <select name="type" [(ngModel)]="modelId">
+        <option *ngFor="let item of sensorModels" [value]="item.id">
+          {{ item.name }}
+        </option>
+      </select>
+    </div>
+    <div class="input-row" *ngIf="type == 'Device'">
+      Parent:
+      <select name="type" [(ngModel)]="parentRoomId">
+        <option *ngFor="let item of rooms" [value]="item.id">
+          {{ item.name }}
+        </option>
+      </select>
+    </div>
+    <div class="input-row" *ngIf="type == 'Sensor'">
+      Parent: (Is parent a room?
+      <input type="checkbox" [(ngModel)]="isParentRoom" />)
+      <select *ngIf="isParentRoom" name="type" [(ngModel)]="parentRoomId">
+        <option *ngFor="let item of rooms" [value]="item.id">
+          {{ item.name }}
+        </option>
+      </select>
+      <select *ngIf="!isParentRoom" name="type" [(ngModel)]="parentDeviceId">
+        <option *ngFor="let item of devices" [value]="item.id">
+          {{ item.name }}
+        </option>
+      </select>
+    </div></ng-container
+  >
+  <button [disabled]="isAddButtonDisabled" (click)="onAddClick()">Add</button>
+</p-dialog>

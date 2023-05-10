@@ -1,0 +1,111 @@
+<div class="content">
+  <div *ngFor="let location of locations" class="item-list">
+    <div
+      class="item location-item"
+      [class.empty]="location.rooms.length == 0"
+      [matTooltip]="location.name"
+      (dragenter)="onDragEnter(location)"
+      (click)="setDetailsTarget(location)"
+    >
+      <img class="icon" src="assets/location.png" />
+      <div class="item-description">{{ location.name }}</div>
+    </div>
+
+    <div *ngFor="let room of location.rooms">
+      <div
+        class="item room-item"
+        [class.empty]="room.devices.length == 0 && room.sensors.length == 0"
+        [matTooltip]="room.name"
+        (dragstart)="onDrag(room)"
+        (dragend)="onRoomDragEnd()"
+        (dragenter)="onDragEnter(room)"
+        [draggable]="true"
+        (click)="setDetailsTarget(room)"
+      >
+        <img class="icon" src="assets/room.png" />
+        <div class="item-description">{{ room.name }}</div>
+      </div>
+
+      <div *ngFor="let sensor of room.sensors">
+        <div
+          class="item sensor-item sensor-item-room"
+          [matTooltip]="sensor.name"
+          (dragstart)="onDrag(sensor)"
+          (dragend)="onSensorDragEnd()"
+          (dragenter)="onDragEnter(sensor)"
+          (click)="setDetailsTarget(sensor)"
+          [draggable]="true"
+        >
+          <img class="icon" src="assets/sensor.png" />
+          <div class="item-description">{{ sensor.name }}</div>
+        </div>
+      </div>
+
+      <div *ngFor="let device of room.devices">
+        <div
+          class="item device-item"
+          [class.empty]="device.sensors.length == 0"
+          [matTooltip]="device.name"
+          (dragstart)="onDrag(device)"
+          (dragend)="onDeviceDragEnd()"
+          [draggable]="true"
+          (dragenter)="onDragEnter(device)"
+          (click)="setDetailsTarget(device)"
+        >
+          <img class="icon" src="assets/device.png" />
+          <div class="item-description">{{ device.name }}</div>
+        </div>
+
+        <div *ngFor="let sensor of device.sensors">
+          <div
+            class="item sensor-item"
+            [matTooltip]="sensor.name"
+            (dragstart)="onDrag(sensor)"
+            (dragend)="onSensorDragEnd()"
+            (dragenter)="onDragEnter(sensor)"
+            [draggable]="true"
+            (click)="setDetailsTarget(sensor)"
+          >
+            <img class="icon" src="assets/sensor.png" />
+            <div class="item-description">{{ sensor.name }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<img class="add-button" src="assets/plus.png" (click)="openAddDialog()" />
+
+<app-container-details-dialog
+  [(visible)]="isContainerDetailsVisible"
+  [detailsTarget]="detailsTarget"
+  (onChangeDetailsTargetName)="onChangeDetailsTargetName($event)"
+  (onDelete)="onDeleteDetailsTarget()"
+></app-container-details-dialog>
+
+<app-device-details-dialog
+  [(visible)]="isDeviceDetailsVisible"
+  [detailsTarget]="detailsTarget"
+  (onChangeDetailsTargetName)="onChangeDetailsTargetName($event)"
+  (onChangeDetailsTargetModel)="onChangeDetailsTargetModel($event)"
+  [device_models]="deviceModels"
+  (onDelete)="onDeleteDetailsTarget()"
+></app-device-details-dialog>
+
+<app-sensor-details-dialog
+  [(visible)]="isSensorDetailsVisible"
+  [detailsTarget]="detailsTarget"
+  (onChangeDetailsTargetName)="onChangeDetailsTargetName($event)"
+  (onChangeDetailsTargetModel)="onChangeDetailsTargetModel($event)"
+  [sensor_models]="sensorModels"
+  (onDelete)="onDeleteDetailsTarget()"
+></app-sensor-details-dialog>
+
+<app-add-dialog
+  [(visible)]="isAddDialogVisible"
+  [fullStructure]="locations"
+  (onAdd)="onAdd($event)"
+  [deviceModels]="deviceModels"
+  [sensorModels]="sensorModels"
+></app-add-dialog>

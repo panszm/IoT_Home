@@ -1,0 +1,32 @@
+<p-dialog
+  [header]="
+    (isDetailsTargetLocation ? 'Location: ' : 'Room: ') +
+    detailsTarget?.name +
+    ' (ID: ' +
+    detailsTarget?.id +
+    ')'
+  "
+  [visible]="visible"
+  (visibleChange)="onVisibleChange($event)"
+  [style]="{ width: '50vw' }"
+  [draggable]="false"
+  [maskStyleClass]="visible ? 'mask' : ''"
+  [dismissableMask]="true"
+>
+  <button pButton (click)="op.toggle($event)">Edit name</button>
+  <button (click)="onDeleteClick()">Delete</button>
+</p-dialog>
+
+<p-overlayPanel #op [dismissable]="true" [showCloseIcon]="true">
+  <ng-template pTemplate>
+    <div style="font-weight: bold">Change name:</div>
+    <input type="text" #changeName />
+    <button
+      (click)="
+        onChangeDetailsTargetNameFunc(changeName.value); op.toggle($event)
+      "
+    >
+      Save
+    </button>
+  </ng-template>
+</p-overlayPanel>

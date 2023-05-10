@@ -1,0 +1,49 @@
+<p-dialog
+  header="Create new instance: "
+  [visible]="visible"
+  (visibleChange)="onVisibleChange($event)"
+  [style]="{ width: '50vw' }"
+  [draggable]="false"
+  [maskStyleClass]="visible ? 'mask' : ''"
+  [dismissableMask]="true"
+>
+  <div class="input-row">
+    Name: <input type="text" pInputText [(ngModel)]="name" />
+  </div>
+  <div class="input-row">
+    Type:
+    <select name="type" [(ngModel)]="type">
+      <option *ngFor="let typeitem of types" [value]="typeitem">
+        {{ typeitem }}
+      </option>
+    </select>
+  </div>
+  <div class="input-row">
+    Producer name: <input type="text" pInputText [(ngModel)]="producent_name" />
+  </div>
+  <div class="input-row">
+    Product url: <input type="text" pInputText [(ngModel)]="product_url" />
+  </div>
+  <ng-container *ngIf="type == 'SensorModel'">
+    <div class="input-row">
+      Measured phenomenom:
+      <input type="text" pInputText [(ngModel)]="measured_phenomenom" />
+    </div>
+    <div class="input-row">
+      Measurement unit short:
+      <input type="text" pInputText [(ngModel)]="measurement_unit_short" />
+    </div>
+    <div class="input-row">
+      Measured range top:
+      <input type="text" pInputText [(ngModel)]="measured_range_top" />
+    </div>
+    <div class="input-row">
+      Measured range bottom:
+      <input type="text" pInputText [(ngModel)]="measured_range_bottom" />
+    </div>
+    <div class="input-row">
+      Precision: <input type="text" pInputText [(ngModel)]="precision" />
+    </div>
+  </ng-container>
+  <button [disabled]="isAddButtonDisabled" (click)="onAddClick()">Add</button>
+</p-dialog>

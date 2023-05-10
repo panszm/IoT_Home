@@ -1,0 +1,36 @@
+:host ::ng-deep {
+  .p-dialog {
+    background: white;
+    padding: 1em;
+    border-radius: 8px;
+  }
+
+  .p-dialog-title {
+    font-weight: bold;
+    padding-bottom: 2em;
+  }
+
+  .p-dialog-header {
+    align-items: start;
+    &-close::before {
+      content: "X";
+    }
+  }
+
+  .mask {
+    background: rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+  }
+}
+
+::ng-deep {
+  .p-overlaypanel {
+    background: white;
+    padding: 1em;
+    border-radius: 8px;
+    box-shadow: 0 0 1px 1px black;
+    &-close::before {
+      content: "X";
+    }
+  }
+}

@@ -1,0 +1,98 @@
+<p-dialog
+  [header]="
+    'Sensor: ' + detailsTarget?.name + ' (ID: ' + detailsTarget?.id + ')'
+  "
+  [visible]="visible"
+  (visibleChange)="onVisibleChange($event)"
+  [style]="{ width: '50vw' }"
+  [draggable]="false"
+  [maskStyleClass]="visible ? 'mask' : ''"
+  [dismissableMask]="true"
+>
+  <div style="display: flex">
+    <div>
+      <div class="subtitle">Sensor model:</div>
+      <div class="subitem">
+        <span class="subtitle">Name: </span
+        >{{ detailsTarget?.sensor_model?.name }}
+      </div>
+      <div class="subitem">
+        <span class="subtitle">Producer name: </span
+        >{{ detailsTarget?.sensor_model?.producent_name }}
+      </div>
+      <div class="subitem">
+        <span class="subtitle">Link: </span
+        ><a
+          target="_blank "
+          href="{{ detailsTarget?.sensor_model?.product_url }}"
+          >{{ detailsTarget?.sensor_model?.product_url }}</a
+        >
+      </div>
+      <div class="subitem">
+        <span class="subtitle">Type: </span
+        >{{ detailsTarget?.sensor_model?.measured_phenomenom }}
+      </div>
+      <div class="subitem">
+        <span class="subtitle">Unit: </span
+        >{{ detailsTarget?.sensor_model?.measurement_unit_short }}
+      </div>
+      <div class="subitem">
+        <span class="subtitle">Max value: </span
+        >{{ detailsTarget?.sensor_model?.measured_range_top }}
+      </div>
+      <div class="subitem">
+        <span class="subtitle">Min value: </span
+        >{{ detailsTarget?.sensor_model?.measured_range_bottom }}
+      </div>
+      <div class="subitem">
+        <span class="subtitle">Precision: </span
+        >{{ detailsTarget?.sensor_model?.precision }}
+      </div>
+    </div>
+    <div style="margin-left: 1em">
+      <div class="subtitle">
+        Latest measurement:
+        <span style="font-weight: normal">{{
+          detailsTarget?.latest_measurement?.measurement_value
+        }}</span>
+        <span style="font-weight: normal">
+          <br />({{ detailsTarget?.latest_measurement?.timestamp }})</span
+        >
+      </div>
+    </div>
+  </div>
+  <button class="footer-buttons" (click)="op.toggle($event)">Edit name</button
+  ><button class="footer-buttons" pButton (click)="opModel.toggle($event)">
+    Change model
+  </button>
+  <button (click)="onDeleteClick()">Delete</button>
+</p-dialog>
+<p-overlayPanel #opModel [dismissable]="true" [showCloseIcon]="true">
+  <ng-template pTemplate>
+    <div style="font-weight: bold">Change model:</div>
+    <select name="type" [(ngModel)]="selectedModelId">
+      <option *ngFor="let item of sensor_models" [value]="item.id">
+        {{ item.name }}
+      </option>
+    </select>
+    <button
+      [disabled]="!selectedModelId.length"
+      (click)="onChangeDetailsTargetModelFunc(); opModel.toggle($event)"
+    >
+      Save
+    </button>
+  </ng-template>
+</p-overlayPanel>
+<p-overlayPanel #op [dismissable]="true" [showCloseIcon]="true">
+  <ng-template pTemplate>
+    <div style="font-weight: bold">Change name:</div>
+    <input type="text" #changeName />
+    <button
+      (click)="
+        onChangeDetailsTargetNameFunc(changeName.value); op.toggle($event)
+      "
+    >
+      Save
+    </button>
+  </ng-template>
+</p-overlayPanel>

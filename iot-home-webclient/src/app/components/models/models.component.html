@@ -1,0 +1,168 @@
+<div class="content">
+  <div class="section">
+    <div class="title">Device Models</div>
+    <div class="item" *ngFor="let model of deviceModels">
+      <div class="title">{{ model.name }}</div>
+      <div>Producer name: {{ model.producent_name }}</div>
+      <div>Product url: {{ model.product_url }}</div>
+      <button class="delete-button" (click)="onDeleteDeviceModel(model)">
+        Delete
+      </button>
+      <button
+        class="edit-button"
+        (click)="
+          edittedDeviceModel = JSON.parse(JSON.stringify(model));
+          opDevice.toggle($event)
+        "
+      >
+        Edit
+      </button>
+    </div>
+  </div>
+  <div class="section">
+    <div class="title">Sensor Models</div>
+    <div class="item" *ngFor="let model of sensorModels">
+      <div class="title">{{ model.name }}</div>
+      <div>Producer name: {{ model.producent_name }}</div>
+      <div>Product url: {{ model.product_url }}</div>
+      <div>Measured phenomenom: {{ model.measured_phenomenom }}</div>
+      <div>Measurement unit short: {{ model.measurement_unit_short }}</div>
+      <div>Measured range top: {{ model.measured_range_top }}</div>
+      <div>Measured range bottom: {{ model.measured_range_bottom }}</div>
+      <div>Precision: {{ model.precision }}</div>
+      <button class="delete-button" (click)="onDeleteSensorModel(model)">
+        Delete
+      </button>
+      <button
+        class="edit-button"
+        (click)="
+          edittedSensorModel = JSON.parse(JSON.stringify(model));
+          opSensor.toggle($event)
+        "
+      >
+        Edit
+      </button>
+    </div>
+  </div>
+</div>
+
+<img class="add-button" src="assets/plus.png" (click)="openAddDialog()" />
+
+<app-add-model-dialog
+  [(visible)]="isAddDialogVisible"
+  (onAdd)="onAdd($event)"
+  [deviceModels]="deviceModels"
+  [sensorModels]="sensorModels"
+></app-add-model-dialog>
+
+<p-overlayPanel #opDevice [dismissable]="true" [showCloseIcon]="true">
+  <ng-template pTemplate>
+    <ng-container *ngIf="edittedDeviceModel">
+      <div style="font-weight: bold">Edit device model:</div>
+      <div class="input-row">
+        Name:
+        <input type="text" pInputText [(ngModel)]="edittedDeviceModel.name" />
+      </div>
+      <div class="input-row">
+        Producer name:
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="edittedDeviceModel.producent_name"
+        />
+      </div>
+      <div class="input-row">
+        Product url:
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="edittedDeviceModel.product_url"
+        />
+      </div>
+      <button
+        [disabled]="!edittedDeviceModel"
+        (click)="onDeviceModelEdit(); opDevice.toggle($event)"
+      >
+        Save
+      </button></ng-container
+    >
+  </ng-template>
+</p-overlayPanel>
+
+<p-overlayPanel #opSensor [dismissable]="true" [showCloseIcon]="true">
+  <ng-template pTemplate>
+    <ng-container *ngIf="edittedSensorModel">
+      <div style="font-weight: bold">Edit sensor model:</div>
+      <div class="input-row">
+        Name:
+        <input type="text" pInputText [(ngModel)]="edittedSensorModel.name" />
+      </div>
+      <div class="input-row">
+        Producer name:
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="edittedSensorModel.producent_name"
+        />
+      </div>
+      <div class="input-row">
+        Product url:
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="edittedSensorModel.product_url"
+        />
+      </div>
+      <div class="input-row">
+        Measured phenomenom:
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="edittedSensorModel.measured_phenomenom"
+        />
+      </div>
+
+      <div class="input-row">
+        Measurement unit short:
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="edittedSensorModel.measurement_unit_short"
+        />
+      </div>
+
+      <div class="input-row">
+        Measured range top:
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="edittedSensorModel.measured_range_top"
+        />
+      </div>
+
+      <div class="input-row">
+        Measured range bottom:
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="edittedSensorModel.measured_range_bottom"
+        />
+      </div>
+
+      <div class="input-row">
+        Precision:
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="edittedSensorModel.precision"
+        />
+      </div>
+      <button
+        [disabled]="!edittedSensorModel"
+        (click)="onSensorModelEdit(); opSensor.toggle($event)"
+      >
+        Save
+      </button></ng-container
+    >
+  </ng-template>
+</p-overlayPanel>
