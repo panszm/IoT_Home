@@ -22,6 +22,9 @@ import {
 })
 export class ListViewComponent implements OnInit {
   locations: Location[] = [];
+  locationsExpanded: Location[] = [];
+  roomsExpanded: Room[] = [];
+  devicesExpanded: Device[] = [];
 
   private _detailsTarget: any;
   public get detailsTarget(): any {
@@ -59,12 +62,17 @@ export class ListViewComponent implements OnInit {
   }
 
   refreshStructure(): void {
-    this.apiService.getFullStructure().subscribe((locations) => {
+    this.apiService.getAllLocations().subscribe((locations) => {
       this.locations = locations;
-      this.refreshDeviceStatuses();
-      this.refreshSensorMeasurements();
-      this.refreshModels();
+      this.locations.forEach((location) => {
+        if (this.isLocationExpanded(location)) {
+          this.refreshLocation(location);
+        }
+      });
     });
+    this.refreshModels();
+    this.refreshDeviceStatuses();
+    this.refreshSensorMeasurements();
   }
 
   refreshDeviceStatuses(): void {
@@ -75,7 +83,7 @@ export class ListViewComponent implements OnInit {
       this.locations
         .map((location) => location.rooms)
         .flat()
-        .map((room) => room.devices)
+        .map((room) => room.devices ?? [])
         .flat()
         .forEach(
           (device) =>
@@ -96,15 +104,15 @@ export class ListViewComponent implements OnInit {
       this.locations
         .map((location) => location.rooms)
         .flat()
-        .map((room) => room.sensors)
+        .map((room) => room.sensors ?? [])
         .flat()
         .concat(
           this.locations
             .map((location) => location.rooms)
             .flat()
-            .map((room) => room.devices)
+            .map((room) => room.devices ?? [])
             .flat()
-            .map((device) => device.sensors)
+            .map((device) => device.sensors ?? [])
             .flat()
         )
         .forEach((sensor) => {
@@ -128,25 +136,17 @@ export class ListViewComponent implements OnInit {
     this.dragAndDropService.startDraggingItem(item);
   }
 
-  onRoomDragEnd() {
-    const draggedItem = this.dragAndDropService.dropItem();
-    const dragTarget = this.dragAndDropService.dragTarget;
-
-    if (isRoom(draggedItem) && isLocation(dragTarget)) {
-      this.apiService
-        .setRoomLocation(draggedItem.id, dragTarget.id)
-        .subscribe((_) => this.refreshStructure());
-    }
-  }
-
   onDeviceDragEnd() {
     const draggedItem = this.dragAndDropService.dropItem();
+    const draggeItemRoomId = draggedItem.room_id;
     const dragTarget = this.dragAndDropService.dragTarget;
 
     if (isDevice(draggedItem) && isRoom(dragTarget)) {
       this.apiService
         .setDeviceRoom(draggedItem.id, dragTarget.id)
-        .subscribe((_) => this.refreshStructure());
+        .subscribe((_) => {
+          this.refreshStructure();
+        });
     }
   }
 
@@ -185,28 +185,24 @@ export class ListViewComponent implements OnInit {
       this.apiService
         .setLocationName(this.detailsTarget.id, newName)
         .subscribe((_) => {
-          this.refreshStructure();
           this.detailsTarget.name = newName;
         });
     } else if (isRoom(this.detailsTarget)) {
       this.apiService
         .setRoomName(this.detailsTarget.id, newName)
         .subscribe((_) => {
-          this.refreshStructure();
           this.detailsTarget.name = newName;
         });
     } else if (isDevice(this.detailsTarget)) {
       this.apiService
         .setDeviceName(this.detailsTarget.id, newName)
         .subscribe((_) => {
-          this.refreshStructure();
           this.detailsTarget.name = newName;
         });
     } else if (isSensor(this.detailsTarget)) {
       this.apiService
         .setSensorName(this.detailsTarget.id, newName)
         .subscribe((_) => {
-          this.refreshStructure();
           this.detailsTarget.name = newName;
         });
     }
@@ -288,5 +284,94 @@ export class ListViewComponent implements OnInit {
           );
         });
     }
+  }
+
+  toggleLocation(location: Location) {
+    if (this.isLocationExpanded(location)) {
+      this.locationsExpanded = this.locationsExpanded.filter(
+        (element) => element.id != location.id
+      );
+      location.rooms.forEach((room) => {
+        this.roomsExpanded = this.roomsExpanded.filter(
+          (element) => element.id != room.id
+        );
+        this.devicesExpanded = this.devicesExpanded.filter(
+          (element) => element.room_id != room.id
+        );
+      });
+    } else {
+      this.locationsExpanded.push(location);
+    }
+  }
+
+  isLocationExpanded(location: Location) {
+    return this.locationsExpanded.some((element) => element.id == location.id);
+  }
+
+  toggleRoom(room: Room) {
+    if (this.isRoomExpanded(room)) {
+      this.roomsExpanded = this.roomsExpanded.filter(
+        (element) => element.id != room.id
+      );
+      this.devicesExpanded = this.devicesExpanded.filter(
+        (element) => element.room_id != room.id
+      );
+    } else {
+      this.roomsExpanded.push(room);
+      this.refreshRoom(room);
+    }
+  }
+
+  isRoomExpanded(room: Room) {
+    return this.roomsExpanded.some((element) => element.id == room.id);
+  }
+
+  toggleDevice(device: Device) {
+    if (this.isDeviceExpanded(device)) {
+      this.devicesExpanded = this.devicesExpanded.filter(
+        (element) => element.id != device.id
+      );
+    } else {
+      this.devicesExpanded.push(device);
+      this.refreshDevice(device);
+    }
+  }
+
+  isDeviceExpanded(device: Device) {
+    return this.devicesExpanded.some((element) => element.id == device.id);
+  }
+
+  getRoom(roomId: string) {
+    return this.locations
+      .flatMap((location) => location.rooms)
+      .find((room) => (room.id = roomId));
+  }
+
+  refreshLocation(location: Location) {
+    location.rooms.forEach((room) => {
+      if (this.isRoomExpanded(room)) {
+        this.refreshRoom(room);
+      }
+    });
+  }
+
+  refreshRoom(room: Room) {
+    this.apiService.getRoomDevices(room.id).subscribe((items) => {
+      room.devices = items;
+      room.devices.forEach((device) => {
+        if (this.isDeviceExpanded(device)) {
+          this.refreshDevice(device);
+        }
+      });
+    });
+    this.apiService
+      .getRoomSensors(room.id)
+      .subscribe((items) => (room.sensors = items));
+  }
+
+  refreshDevice(device: Device) {
+    this.apiService
+      .getDeviceSensors(device.id)
+      .subscribe((items) => (device.sensors = items));
   }
 }

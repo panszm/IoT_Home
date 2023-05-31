@@ -4,7 +4,7 @@ import { Room } from '../models/room';
 import { Sensor } from '../models/sensor';
 
 export function isRoom(arg: any): arg is Room {
-  return arg && 'id' in arg && 'location_id' in arg;
+  return arg && 'id' in arg && 'name' in arg && 'devices' in arg;
 }
 
 export function isLocation(arg: any): arg is Location {

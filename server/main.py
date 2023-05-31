@@ -14,18 +14,14 @@ def hello() -> object:
 def get_all_locations() -> list[models.Location]:
     return mongo_api_getters.get_all_locations()
 
-@prefix_router.get("/rooms")
-def get_all_rooms() -> list[models.Room]:
-    return mongo_api_getters.get_all_rooms()
+@prefix_router.get("/devices")
+def get_all_devices() -> list[models.Device]:
+    return mongo_api_getters.get_all_devices()
 
-@prefix_router.get("/full-structure")
-def get_full_structure() -> list[models.Location] :
-    return mongo_api_getters.get_full_structure()
+@prefix_router.get("/sensors")
+def get_all_sensors() -> list[models.Sensor]:
+    return mongo_api_getters.get_all_sensors()
 
-@prefix_router.post("/room-set-location")
-def set_room_location(args: dict):
-    mongo_api_setters.update_room_location(args['roomId'], args['newLocationId'])
-    
 @prefix_router.post("/device-set-room")
 def set_device_room(args: dict):
     mongo_api_setters.update_device_room(args['deviceId'], args['newRoomId'])
@@ -129,5 +125,17 @@ def edit_device_model(args: dict):
 @prefix_router.post("/edit-sensor-model")
 def edit_sensor_model(args: dict):
     mongo_api_setters.edit_sensor_model(args["id"], args["name"], args["producent_name"], args["product_url"], args["measured_phenomenom"], args["measurement_unit_short"], args["measured_range_top"], args["measured_range_bottom"], args["precision"])
+
+@prefix_router.get("/room-sensors")
+def get_room_sensors(room_id: str) -> list[models.Sensor]:
+    return mongo_api_getters.get_room_sensors(room_id)
+
+@prefix_router.get("/room-devices")
+def get_room_devices(room_id: str) -> list[models.Device]:
+    return mongo_api_getters.get_room_devices(room_id)
+
+@prefix_router.get("/device-sensors")
+def get_device_sensors(device_id: str) -> list[models.Sensor]:
+    return mongo_api_getters.get_device_sensors(device_id)
 
 app.include_router(prefix_router)

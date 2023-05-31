@@ -5,9 +5,9 @@ import { Sensor } from './sensor';
 export interface Device {
   id: string;
   device_model_id: string;
-  roomId: string;
+  room_id: string;
   name: string;
   device_model: DeviceModel;
-  sensors: Sensor[];
+  sensors?: Sensor[];
   device_status?: DeviceStatus;
 }

@@ -6,6 +6,8 @@ import { DeviceStatus } from '../models/deviceStatus';
 import { SensorMeasurement } from '../models/sensorMeasurement';
 import { DeviceModel } from '../models/deviceModel';
 import { SensorModel } from '../models/sensorModel';
+import { Sensor } from '../models/sensor';
+import { Device } from '../models/device';
 
 @Injectable({
   providedIn: 'root',
@@ -16,14 +18,11 @@ export class APIService {
   getAllLocations(): Observable<Location[]> {
     return this.http.get('/api/locations') as Observable<Location[]>;
   }
-
-  getFullStructure(): Observable<Location[]> {
-    return this.http.get('/api/full-structure') as Observable<Location[]>;
+  getAllDevices(): Observable<Device[]> {
+    return this.http.get('/api/devices') as Observable<Device[]>;
   }
-
-  setRoomLocation(roomId: string, newLocationId: string) {
-    let body = { roomId: roomId, newLocationId: newLocationId };
-    return this.http.post('/api/room-set-location', body);
+  getAllSensors(): Observable<Sensor[]> {
+    return this.http.get('/api/sensors') as Observable<Sensor[]>;
   }
 
   setDeviceRoom(deviceId: string, newRoomId: string) {
@@ -211,5 +210,26 @@ export class APIService {
       precision: precision,
     };
     return this.http.post('/api/edit-sensor-model', body);
+  }
+
+  getRoomSensors(roomId: string): Observable<Sensor[]> {
+    let params = { room_id: roomId };
+    return this.http.get('/api/room-sensors', {
+      params: params,
+    }) as Observable<Sensor[]>;
+  }
+
+  getRoomDevices(roomId: string): Observable<Device[]> {
+    let params = { room_id: roomId };
+    return this.http.get('/api/room-devices', {
+      params: params,
+    }) as Observable<Device[]>;
+  }
+
+  getDeviceSensors(deviceId: string): Observable<Sensor[]> {
+    let params = { device_id: deviceId };
+    return this.http.get('/api/device-sensors', {
+      params: params,
+    }) as Observable<Sensor[]>;
   }
 }

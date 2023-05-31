@@ -1,16 +1,12 @@
-from pymongo import MongoClient
 from bson import ObjectId
 import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from constants import *
-import database_utils
-import models
 from general import *
-
-def update_room_location(room_id: str, new_location_id: str):
-    query = { "_id": ObjectId(room_id) }
-    new_values = { "$set": { "location_id": ObjectId(new_location_id) } }
-    get_database()[COLLECTION_ROOMS].update_one(query, new_values)
+import database_utils
+import uuid
+import random
+import string
 
 def update_device_room(device_id: str, new_room_id: str):
     query = { "_id": ObjectId(device_id) }
@@ -28,9 +24,9 @@ def update_location_name(id: str, new_name: str):
     get_database()[COLLECTION_LOCATIONS].update_one(query, new_values)
 
 def update_room_name(id: str, new_name: str):
-    query = { "_id": ObjectId(id) }
-    new_values = { "$set": { "name": new_name}}
-    get_database()[COLLECTION_ROOMS].update_one(query, new_values)
+    query = { "rooms._id": ObjectId(id)}
+    new_values = { "$set": { "rooms.$.name": new_name}}
+    get_database()[COLLECTION_LOCATIONS].update_one(query, new_values)
 
 def update_device_name(id: str, new_name: str):
     query = { "_id": ObjectId(id) }
@@ -47,8 +43,10 @@ def create_location(name: str):
     get_database()[COLLECTION_LOCATIONS].insert_one(item)
     
 def create_room(name: str, location_id: str):
-    item = { "name": name, "location_id": ObjectId(location_id) }
-    get_database()[COLLECTION_ROOMS].insert_one(item)
+    item = {"_id": ObjectId(), "name": name }
+    query = { "_id": ObjectId(location_id)}
+    update_query = {"$push": {"rooms": item}}
+    get_database()[COLLECTION_LOCATIONS].update_one(query, update_query)
     
 def create_device(name: str, device_model_id: str, room_id: str):
     item = { "name": name, "device_model_id": ObjectId(device_model_id), "room_id": ObjectId(room_id) }
@@ -138,4 +136,6 @@ def edit_sensor_model(id: str, name: str, producent_name: str, product_url: str,
     get_database()[COLLECTION_SENSOR_MODELS].update_one(query, new_values)
 
 if __name__ == "__main__":   
-   update_sensor_assignments("645257fff032697127623cfe", None, "645243caf032697127623cee")
+#    update_sensor_assignments("645257fff032697127623cfe", None, "645243caf032697127623cee")
+    # update_room_name("6451644a55b67e20fc32cc99", "TestKuchnia")
+    create_room("TestRoom","6453c2b77555eb7499217eb6")

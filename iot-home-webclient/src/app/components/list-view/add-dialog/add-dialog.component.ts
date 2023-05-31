@@ -29,7 +29,7 @@ export class AddDialogComponent implements OnInit {
     return this.fullStructure.map((location) => location.rooms).flat();
   }
   get devices(): Device[] {
-    return this.rooms.map((room) => room.devices).flat();
+    return this.rooms.map((room) => room.devices ?? []).flat();
   }
 
   get isAddButtonDisabled(): boolean {

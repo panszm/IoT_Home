@@ -48,7 +48,6 @@ class Device(BaseModel):
 
 class Room(BaseModel):
     id: str
-    location_id: str
     name: str
     devices: list[Device] | None
     sensors: list[Sensor] | None

@@ -5,6 +5,7 @@ import { Location } from 'src/app/models/location';
 import { Room } from 'src/app/models/room';
 import { Sensor } from 'src/app/models/sensor';
 import { SensorMeasurement } from 'src/app/models/sensorMeasurement';
+import { SensorModel } from 'src/app/models/sensorModel';
 import { APIService } from 'src/app/services/api.service';
 
 @Component({
@@ -28,11 +29,6 @@ export class DashboardOverviewComponent implements OnInit {
   public set locations(v: Location[]) {
     this._locations = v;
     this.rooms = v.map((location) => location.rooms).flat();
-    this.devices = this.rooms.map((room) => room.devices).flat();
-    this.sensors = this.rooms
-      .map((room) => room.sensors)
-      .flat()
-      .concat(this.devices.map((device) => device.sensors).flat());
   }
 
   constructor(private apiService: APIService) {}
@@ -42,10 +38,26 @@ export class DashboardOverviewComponent implements OnInit {
   }
 
   refreshData(): void {
-    this.apiService.getFullStructure().subscribe((locations) => {
-      this.locations = locations;
+    this.apiService
+      .getAllLocations()
+      .subscribe((locations) => (this.locations = locations));
+    this.apiService.getAllDevices().subscribe((devices) => {
+      this.devices = devices;
       this.refreshDeviceStatuses();
-      this.refreshSensorMeasurements();
+    });
+    this.apiService.getAllSensors().subscribe((sensors) => {
+      this.sensors = sensors;
+      this.apiService.getAllSensorModels().subscribe((models) => {
+        this.sensors.forEach((sensor) => {
+          const foundModel = models.find(
+            (model) => model.id == sensor.sensor_model_id
+          );
+          if (foundModel) {
+            sensor.sensor_model = foundModel;
+          }
+        });
+        this.refreshSensorMeasurements();
+      });
     });
   }
 
@@ -72,6 +84,8 @@ export class DashboardOverviewComponent implements OnInit {
         new Date(measurement.timestamp).getTime()
       );
       measurements.reverse();
+      console.log(measurements, this.sensors);
+
       this.sensorMeasurements = measurements;
       this.sensors.forEach((sensor) => {
         sensor.latest_measurement = this.sensorMeasurements.find(
